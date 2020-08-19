@@ -48,7 +48,7 @@ class Scanner extends React.Component {
     }
   }
 
-  connect = (key) => http.post('http://api.portal.brunswick.guymac.eu/connect', {
+  connect = (key) => http.post(process.env.REACT_APP_NETWORK_AUTH_ENDPOINT, {
     key,
     mac: new URLSearchParams(window.location.search).get('mac'),
   });
