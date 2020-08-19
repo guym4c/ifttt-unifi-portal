@@ -20,11 +20,13 @@ const connect = (mac, callback) => {
 
   unifi.login(env.UNIFI_CONTROLLER_USERNAME, env.UNIFI_CONTROLLER_PASSWORD, (err) => {
     if (err) {
+      console.log(err);
       callback(UNIFI_API_ERROR);
     }
 
     unifi.authorizeGuest([env.UNIFI_SITE_NAME], mac, env.NETWORK_REAUTH_TIMEOUT_MINS, (err) => {
       if (err) {
+        console.log(err);
         callback(UNIFI_API_ERROR);
       } else {
         callback(null, {
