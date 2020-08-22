@@ -6,7 +6,8 @@ const redis = require('../helpers/redis');
 const { APPROVAL_PENDING } = require('../constants/status');
 const { AUTH_REQUEST_ERROR, INVALID_NAME_ERROR } = require('../constants/error');
 
-exports.handler = ({ body: { name = '', mac = '' } }, context, callback) => {
+exports.handler = ({ body }, context, callback) => {
+  let { name = '', mac = '' } = JSON.parse(body);
   name = name.trim();
   if (name.match(/^[A-Za-z][\sA-Za-z]*$/) === null) {
     callback(INVALID_NAME_ERROR);

@@ -4,7 +4,8 @@ const redis = require('../helpers/redis');
 const { CONNECTION_APPROVED } = require('../constants/status');
 const { AUTH_REQUEST_ERROR } = require('../constants/error');
 
-exports.handler = ({ body: { id = '' } }, context, callback) => {
+exports.handler = ({ body }, context, callback) => {
+  const { id = '' } = JSON.parse(body);
   let connected = false;
 
   redis.get(id)
