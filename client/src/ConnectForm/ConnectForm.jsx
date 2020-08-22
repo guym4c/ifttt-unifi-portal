@@ -80,6 +80,7 @@ class ConnectForm extends React.Component {
               <Form.Control
                 value={name}
                 onChange={this.onNameChange}
+                autofocus={true}
               />
             </Form.Group>
             <Button
