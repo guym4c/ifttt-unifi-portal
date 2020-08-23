@@ -1,4 +1,4 @@
-const redis = require('../helpers/tedis');
+const redis = require('../helpers/redis');
 const { CONNECTION_APPROVED } = require('../constants/status');
 
 exports.handler = async ({ body }) => {

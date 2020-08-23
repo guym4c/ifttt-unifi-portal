@@ -1,7 +1,7 @@
 require('dotenv').config();
-const unifiClient = require('node-unifi');
+const unifiController = require('node-unifiapi');
 const { env } = require('process');
-const { AUTH_REQUEST_ERROR, DEVICE_APPROVE_AUTH_ERROR, UNIFI_API_ERROR } = require('../constants/error');
+const { DEVICE_APPROVE_AUTH_ERROR, UNIFI_API_ERROR } = require('../constants/error');
 const redis = require('../helpers/redis');
 const { CONNECTION_APPROVED } = require('../constants/status');
 
@@ -18,35 +18,25 @@ exports.handler = ({ queryStringParameters: { id = '', mac = '', key = '' } }, c
 };
 
 const approve = (id, mac, callback) => {
-  const unifi = new unifiClient.Controller(env.UNIFI_CONTROLLER_HOSTNAME, env.UNIFI_CONTROLLER_PORT);
+  const unifi = unifiController({
+    baseUrl: env.UNIFI_CONTROLLER_BASE_URL,
+    username: env.UNIFI_CONTROLLER_USERNAME,
+    password: env.UNIFI_CONTROLLER_PASSWORD,
+  })
 
-  unifi.login(env.UNIFI_CONTROLLER_USERNAME, env.UNIFI_CONTROLLER_PASSWORD, (err) => {
-    if (err) {
-      console.log(err);
-      callback(null, {
-        statusCode: 500,
-        body: JSON.stringify({ error: UNIFI_API_ERROR }),
-      });
-      return;
-    }
+  try {
+    await unifi.authorize_guest(mac, env.NETWORK_REAUTH_TIMEOUT_MINS);
+    await redis.set(id, CONNECTION_APPROVED);
+  } catch (error) {
+    console.error(error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: UNIFI_API_ERROR }),
+    };
+  }
 
-    unifi.authorizeGuest([env.UNIFI_SITE_NAME], mac, env.NETWORK_REAUTH_TIMEOUT_MINS, (err) => {
-      if (err) {
-        console.log(err);
-        callback(null, {
-          statusCode: 500,
-          body: JSON.stringify({ error: UNIFI_API_ERROR }),
-        });
-        return;
-      }
-
-      redis.set(id, CONNECTION_APPROVED, () => {
-        redis.quit();
-        callback(null, {
-          statusCode: 200,
-          body: JSON.stringify({ approved: 'yes' }),
-        });
-      });
-    });
-  });
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ approved: 'yes' }),
+  };
 };

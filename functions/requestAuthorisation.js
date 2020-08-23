@@ -2,7 +2,7 @@ require('dotenv').config();
 const { env } = require('process');
 const { v4: uuid } = require('uuid');
 const http = require('axios');
-const redis = require('../helpers/tedis');
+const redis = require('../helpers/redis');
 const { APPROVAL_PENDING } = require('../constants/status');
 const { AUTH_REQUEST_ERROR, INVALID_NAME_ERROR } = require('../constants/error');
 
@@ -22,6 +22,7 @@ exports.handler = async ({ body }) => {
     await redis.set(pollId, APPROVAL_PENDING);
     await requestAuth(pollId, name, mac);
   } catch (error) {
+    console.error(error);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: AUTH_REQUEST_ERROR }),
