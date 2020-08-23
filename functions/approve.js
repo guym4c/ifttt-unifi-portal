@@ -41,15 +41,20 @@ const approve = (id, mac, callback) => {
       }
 
       redis.set(id, CONNECTION_APPROVED)
-        .then(() => callback(null, {
-          statusCode: 200,
-          body: JSON.stringify({ approved: 'yes' }),
-        }))
-        .catch(() => callback(null, {
-          statusCode: 500,
-          body: JSON.stringify({ error: AUTH_REQUEST_ERROR }),
-        }))
-        .finally(redis.close);
+        .then(() => {
+          redis.close();
+          callback(null, {
+            statusCode: 200,
+            body: JSON.stringify({ approved: 'yes' }),
+          });
+        })
+        .catch(() => {
+          redis.close();
+          callback(null, {
+            statusCode: 500,
+            body: JSON.stringify({ error: AUTH_REQUEST_ERROR }),
+          });
+        });
     });
   });
 };

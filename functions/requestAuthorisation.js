@@ -20,15 +20,18 @@ exports.handler = ({ body }, context, callback) => {
     .then(() => {
       requestAuth(pollId, name, mac)
         .then(() => {
+          redis.close();
           callback(null, {
             statusCode: 200,
             body: JSON.stringify({ pollId }),
           });
         })
-        .catch(() => callback(AUTH_REQUEST_ERROR));
+        .catch(() => {
+          redis.close();
+          callback(AUTH_REQUEST_ERROR);
+        });
     })
-    .catch(() => callback(AUTH_REQUEST_ERROR))
-    .finally(redis.close);
+    .catch(() => callback(AUTH_REQUEST_ERROR));
 };
 
 const requestAuth = (pollId, name, mac) => {

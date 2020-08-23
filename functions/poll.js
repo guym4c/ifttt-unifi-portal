@@ -10,6 +10,7 @@ exports.handler = ({ body }, context, callback) => {
 
   redis.get(id)
     .then((value) => {
+      redis.close();
       connected = value === CONNECTION_APPROVED;
 
       callback(null, {
@@ -17,6 +18,8 @@ exports.handler = ({ body }, context, callback) => {
         body: JSON.stringify({ connected }),
       });
     })
-    .catch(() => callback(AUTH_REQUEST_ERROR))
-    .finally(redis.close);
+    .catch(() => {
+      redis.close();
+      callback(AUTH_REQUEST_ERROR);
+    });
 };
