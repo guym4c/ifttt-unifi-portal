@@ -28,7 +28,7 @@ class ConnectForm extends React.Component {
     this.setState({ connecting: true });
 
     this.requestAuth()
-      .then(({ pollId }) => {
+      .then(({ data: { pollId } }) => {
         this.poll(pollId);
       })
       .catch(this.refresh);
@@ -50,7 +50,7 @@ class ConnectForm extends React.Component {
   poll = (id) => {
     window.setInterval(() => {
       http.post(`https://${process.env.REACT_APP_HOST}/.netlify/functions/poll`, { id })
-        .then(({ connected }) => {
+        .then(({ data: { connected } }) => {
           if (connected === true) {
             window.location.replace(
               new URLSearchParams(window.location.search).get('url')
