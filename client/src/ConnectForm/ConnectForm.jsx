@@ -34,10 +34,7 @@ class ConnectForm extends React.Component {
       .catch(this.refresh);
   };
 
-  refresh = (error) => {
-    console.warn(error);
-    window.location.reload();
-  };
+  refresh = () => window.location.reload();
 
   requestAuth = () => {
     const { name } = this.state;

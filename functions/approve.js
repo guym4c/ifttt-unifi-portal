@@ -18,7 +18,7 @@ exports.handler = async ({ queryStringParameters: { id = '', mac = '', key = '' 
     baseUrl: env.UNIFI_CONTROLLER_BASE_URL,
     username: env.UNIFI_CONTROLLER_USERNAME,
     password: env.UNIFI_CONTROLLER_PASSWORD,
-  })
+  });
 
   try {
     await unifi.authorize_guest(mac, env.NETWORK_REAUTH_TIMEOUT_MINS);

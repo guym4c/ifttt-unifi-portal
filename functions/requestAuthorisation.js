@@ -43,4 +43,4 @@ const requestAuth = (pollId, name, mac) => {
 
   return http
     .get(`https://maker.ifttt.com/trigger/${env.IFTTT_EVENT_NAME}/with/key/${env.IFTTT_WEBHOOK_KEY}?${query.toString()}`);
-}
+};
