@@ -30,9 +30,12 @@ exports.handler = ({ body }, context, callback) => {
     .catch(() => callback(AUTH_REQUEST_ERROR));
 };
 
-const requestAuth = (pollId, name, mac) => http.post(`https://maker.ifttt.com/trigger/${env.IFTTT_EVENT_NAME}/with/key/${env.IFTTT_WEBHOOK_KEY}`, {
-  data: {
+const requestAuth = (pollId, name, mac) => {
+  const query = new URLSearchParams({
     value1: name,
     value2: `https://${env.REACT_APP_HOST}/.netlify/functions/approve?id=${pollId}&mac=${mac}&key=${env.NETWORK_DEVICE_APPROVE_KEY}`,
-  },
-});
+  });
+
+  return http
+    .get(`https://maker.ifttt.com/trigger/${env.IFTTT_EVENT_NAME}/with/key/${env.IFTTT_WEBHOOK_KEY}?${query.toString()}`);
+}
