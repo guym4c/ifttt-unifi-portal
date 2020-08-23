@@ -43,7 +43,7 @@ class ConnectForm extends React.Component {
     const { name } = this.state;
     return http.post(`https://${process.env.REACT_APP_HOST}/.netlify/functions/requestAuthorisation`, {
       name,
-      mac: new URLSearchParams(window.location.search).get('mac'),
+      mac: new URLSearchParams(window.location.search).get('id'),
     });
   };
 
@@ -92,7 +92,6 @@ class ConnectForm extends React.Component {
               Connect
             </Button>
           </Form>
-          <p>params: {window.location.search}</p>
         </React.Fragment>
       );
   }
