@@ -12,7 +12,6 @@ class ConnectForm extends React.Component {
     this.state = {
       connecting: false,
       name: '',
-      mac: new URLSearchParams(window.location.search).get('mac'),
     };
   }
 
@@ -64,7 +63,7 @@ class ConnectForm extends React.Component {
   };
 
   render() {
-    const { name, connecting, mac } = this.state;
+    const { name, connecting } = this.state;
     return connecting
       ? (
         <div className="d-flex flex-column align-items-center">
@@ -93,7 +92,7 @@ class ConnectForm extends React.Component {
               Connect
             </Button>
           </Form>
-          <p>mac: {mac}</p>
+          <p>params: {window.location.search}</p>
         </React.Fragment>
       );
   }
