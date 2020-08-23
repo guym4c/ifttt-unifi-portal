@@ -2,34 +2,36 @@ require('dotenv').config();
 const { env } = require('process');
 const { v4: uuid } = require('uuid');
 const http = require('axios');
-const redis = require('../helpers/redis');
+const redis = require('../helpers/tedis');
 const { APPROVAL_PENDING } = require('../constants/status');
 const { AUTH_REQUEST_ERROR, INVALID_NAME_ERROR } = require('../constants/error');
 
-exports.handler = ({ body }, context, callback) => {
+exports.handler = async ({ body }) => {
   let { name = '', mac = '' } = JSON.parse(body);
   name = name.trim();
   if (name.match(/^[A-Za-z][\sA-Za-z]*$/) === null) {
-    callback(INVALID_NAME_ERROR);
-    return;
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: INVALID_NAME_ERROR }),
+    };
   }
 
   const pollId = uuid();
 
-  redis.set(pollId, APPROVAL_PENDING, () => {
-    redis.quit();
-    requestAuth(pollId, name, mac)
-      .then(() => {
-        callback(null, {
-          statusCode: 200,
-          body: JSON.stringify({ pollId }),
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-        callback(AUTH_REQUEST_ERROR);
-      });
-  });
+  try {
+    await redis.set(pollId, APPROVAL_PENDING);
+    await requestAuth(pollId, name, mac);
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: AUTH_REQUEST_ERROR }),
+    };
+  }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ pollId }),
+  };
 };
 
 const requestAuth = (pollId, name, mac) => {
