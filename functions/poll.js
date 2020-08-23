@@ -6,8 +6,9 @@ exports.handler = ({ body }, context, callback) => {
   const { id = '' } = JSON.parse(body);
   let connected = false;
 
-  redis.get(id, (err, value) => {
-    if (err) {
+  redis.get(id, (error, value) => {
+    if (error) {
+      console.error(error);
       callback(AUTH_REQUEST_ERROR);
       return;
     }
