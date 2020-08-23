@@ -16,22 +16,20 @@ exports.handler = ({ body }, context, callback) => {
 
   const pollId = uuid();
 
-  redis.set(pollId, APPROVAL_PENDING)
-    .then(() => {
-      requestAuth(pollId, name, mac)
-        .then(() => {
-          redis.close();
-          callback(null, {
-            statusCode: 200,
-            body: JSON.stringify({ pollId }),
-          });
-        })
-        .catch(() => {
-          redis.close();
-          callback(AUTH_REQUEST_ERROR);
+  redis.set(pollId, APPROVAL_PENDING, () => {
+    requestAuth(pollId, name, mac)
+      .then(() => {
+        redis.quit();
+        callback(null, {
+          statusCode: 200,
+          body: JSON.stringify({ pollId }),
         });
-    })
-    .catch(() => callback(AUTH_REQUEST_ERROR));
+      })
+      .catch(() => {
+        redis.quit();
+        callback(AUTH_REQUEST_ERROR);
+      });
+  });
 };
 
 const requestAuth = (pollId, name, mac) => {

@@ -1,8 +1,8 @@
 require('dotenv').config();
 const { env } = require('process');
-const { Tedis } = require('tedis');
+const redis = require('redis');
 
-module.exports = new Tedis({
+module.exports = redis.createClient({
   port: env.REDIS_PORT,
   host: env.REDIS_HOST,
   password: env.REDIS_PASSWORD,

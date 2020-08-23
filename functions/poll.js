@@ -6,18 +6,18 @@ exports.handler = ({ body }, context, callback) => {
   const { id = '' } = JSON.parse(body);
   let connected = false;
 
-  redis.get(id)
-    .then((value) => {
-      redis.close();
-      connected = value === CONNECTION_APPROVED;
-
-      callback(null, {
-        statusCode: 200,
-        body: JSON.stringify({ connected }),
-      });
-    })
-    .catch(() => {
-      redis.close();
+  redis.get(id, (err, value) => {
+    if (err) {
       callback(AUTH_REQUEST_ERROR);
+      return;
+    }
+
+    redis.quit();
+    connected = value === CONNECTION_APPROVED;
+
+    callback(null, {
+      statusCode: 200,
+      body: JSON.stringify({ connected }),
     });
+  });
 };
