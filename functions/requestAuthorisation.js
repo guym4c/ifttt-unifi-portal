@@ -27,7 +27,8 @@ exports.handler = ({ body }, context, callback) => {
         })
         .catch(() => callback(AUTH_REQUEST_ERROR));
     })
-    .catch(() => callback(AUTH_REQUEST_ERROR));
+    .catch(() => callback(AUTH_REQUEST_ERROR))
+    .finally(redis.close);
 };
 
 const requestAuth = (pollId, name, mac) => {

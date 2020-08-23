@@ -48,7 +48,8 @@ const approve = (id, mac, callback) => {
         .catch(() => callback(null, {
           statusCode: 500,
           body: JSON.stringify({ error: AUTH_REQUEST_ERROR }),
-        }));
+        }))
+        .finally(redis.close);
     });
   });
 };

@@ -17,5 +17,6 @@ exports.handler = ({ body }, context, callback) => {
         body: JSON.stringify({ connected }),
       });
     })
-    .catch(() => callback(AUTH_REQUEST_ERROR));
+    .catch(() => callback(AUTH_REQUEST_ERROR))
+    .finally(redis.close);
 };
