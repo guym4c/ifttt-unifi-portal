@@ -5,19 +5,15 @@ const { DEVICE_APPROVE_AUTH_ERROR, UNIFI_API_ERROR } = require('../constants/err
 const redis = require('../helpers/redis');
 const { CONNECTION_APPROVED } = require('../constants/status');
 
-exports.handler = ({ queryStringParameters: { id = '', mac = '', key = '' } }, context, callback) => {
+exports.handler = async ({ queryStringParameters: { id = '', mac = '', key = '' } }) => {
 
-  if (key === env.NETWORK_DEVICE_APPROVE_KEY) {
-    approve(id, mac, callback);
-  } else {
-    callback(null, {
+  if (key !== env.NETWORK_DEVICE_APPROVE_KEY) {
+    return {
       statusCode: 500,
       body: JSON.stringify({ error: DEVICE_APPROVE_AUTH_ERROR }),
-    });
+    };
   }
-};
 
-const approve = (id, mac, callback) => {
   const unifi = unifiController({
     baseUrl: env.UNIFI_CONTROLLER_BASE_URL,
     username: env.UNIFI_CONTROLLER_USERNAME,
