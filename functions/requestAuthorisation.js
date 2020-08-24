@@ -36,9 +36,16 @@ exports.handler = async ({ body }) => {
 };
 
 const requestAuth = (pollId, name, mac) => {
+  const approveUrlQuery = new URLSearchParams({
+    id: pollId,
+    key: env.NETWORK_DEVICE_APPROVE_KEY,
+    mac,
+    name,
+  });
+
   const query = new URLSearchParams({
     value1: name,
-    value2: `https://${env.REACT_APP_HOST}/.netlify/functions/approve?id=${pollId}&mac=${mac}&key=${env.NETWORK_DEVICE_APPROVE_KEY}`,
+    value2: `https://${env.REACT_APP_HOST}/.netlify/functions/approve?${approveUrlQuery.toString()}`,
   });
 
   return http

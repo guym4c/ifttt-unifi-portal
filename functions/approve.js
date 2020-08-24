@@ -5,7 +5,7 @@ const { DEVICE_APPROVE_AUTH_ERROR, UNIFI_API_ERROR } = require('../constants/err
 const redis = require('../helpers/redis');
 const { CONNECTION_APPROVED } = require('../constants/status');
 
-exports.handler = async ({ queryStringParameters: { id = '', mac = '', key = '' } }) => {
+exports.handler = async ({ queryStringParameters: { id = '', mac = '', key = '', name = '' } }) => {
 
   if (key !== env.NETWORK_DEVICE_APPROVE_KEY) {
     return {
@@ -31,8 +31,13 @@ exports.handler = async ({ queryStringParameters: { id = '', mac = '', key = '' 
     };
   }
 
+  const query = new URLSearchParams({
+    approved: 'yes',
+    name,
+  });
+
   return {
-    statusCode: 200,
-    body: JSON.stringify({ approved: 'yes' }),
+    statusCode: 302,
+    headers: { Location: `https://${env.REACT_APP_HOST}?${query.toString()}` },
   };
 };
