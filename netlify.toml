@@ -1,0 +1,18 @@
+[build]
+    command="npm run build"
+    publish="client/build"
+    functions="functions"
+
+[template.environment]
+    UNIFI_CONTROLLER_BASE_URL = "e.g. https://1.2.3.4:8443"
+    UNIFI_SITE_NAME="Probably 'default'"
+    UNIFI_CONTROLLER_USERNAME=""
+    UNIFI_CONTROLLER_PASSWORD=""
+    NETWORK_REAUTH_TIMEOUT_MINS="The time a guest is authorised for in minutes"
+    NETWORK_DEVICE_APPROVE_KEY="A secret key that IFTTT uses to approve devices"
+    REACT_APP_HOST="The hostname of this app"
+    REDIS_HOST="The hostname of your Redis instance"
+    REDIS_PORT="The port your Redis instance is running on"
+    REDIS_PASSWORD="The password to your Redis instance"
+    IFTTT_EVENT_NAME="The maker event name you've set your IFTTT recipe to fire on"
+    IFTTT_WEBHOOK_KEY="Your IFTTT account's webhook key"
