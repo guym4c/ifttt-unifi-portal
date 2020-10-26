@@ -23,8 +23,11 @@ const ConnectForm = () => {
     }
   };
 
+  const incrementPollCount = () => setTotalPolls(totalPolls + 1);
+
   const poll = (id) => {
     window.setInterval(() => {
+      incrementPollCount();
       http.post(`https://${process.env.REACT_APP_HOST}/.netlify/functions/poll`, { id })
         .then(({ data: { connected } }) => {
           if (connected === true) {
@@ -32,8 +35,6 @@ const ConnectForm = () => {
               new URLSearchParams(window.location.search).get('url')
               || DEFAULT_REDIRECT_URL
             );
-          } else {
-            setTotalPolls(totalPolls + 1);
           }
         })
         .catch(refresh);
