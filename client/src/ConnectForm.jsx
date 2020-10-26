@@ -4,27 +4,15 @@ import { RotateSpinner } from 'react-spinners-kit';
 import http from 'axios';
 
 const DEFAULT_REDIRECT_URL = 'https://google.com';
+const POLL_FREQUENCY_SECONDS = 2;
+const WARNING_SHOWN_SECONDS = 20;
 
 const refresh = () => window.location.reload();
-
-const poll = (id) => {
-  window.setInterval(() => {
-    http.post(`https://${process.env.REACT_APP_HOST}/.netlify/functions/poll`, { id })
-      .then(({ data: { connected } }) => {
-        if (connected === true) {
-          window.location.replace(
-            new URLSearchParams(window.location.search).get('url')
-            || DEFAULT_REDIRECT_URL
-          );
-        }
-      })
-      .catch(refresh);
-  }, 3 * 1000);
-};
 
 const ConnectForm = () => {
   const [connecting, setConnecting] = useState(false);
   const [name, setName] = useState('');
+  const [totalPolls, setTotalPolls] = useState(0);
 
   const onNameChange = ({ target: { value = '' } }) => {
     if (
@@ -33,6 +21,23 @@ const ConnectForm = () => {
     ) {
       setName(value);
     }
+  };
+
+  const poll = (id) => {
+    window.setInterval(() => {
+      http.post(`https://${process.env.REACT_APP_HOST}/.netlify/functions/poll`, { id })
+        .then(({ data: { connected } }) => {
+          if (connected === true) {
+            window.location.replace(
+              new URLSearchParams(window.location.search).get('url')
+              || DEFAULT_REDIRECT_URL
+            );
+          } else {
+            setTotalPolls(totalPolls + 1);
+          }
+        })
+        .catch(refresh);
+    }, POLL_FREQUENCY_SECONDS * 1000);
   };
 
   const requestAuth = () => http.post(
@@ -53,11 +58,14 @@ const ConnectForm = () => {
       .catch(refresh);
   };
 
+  const showWarning = totalPolls > WARNING_SHOWN_SECONDS / POLL_FREQUENCY_SECONDS;
+
   return connecting
     ? (
       <div className="d-flex flex-column align-items-center">
         <RotateSpinner />
-        <h2 className="mt-2">Connecting</h2>
+        <h2 className="my-2">Connecting</h2>
+        {showWarning && <p>It looks like your access may have been rejected.</p>}
       </div>
     )
     : (
@@ -69,7 +77,7 @@ const ConnectForm = () => {
             <Form.Control
               value={name}
               onChange={onNameChange}
-              autofocus={true}
+              autoFocus={true}
             />
           </Form.Group>
           <Button

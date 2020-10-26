@@ -1,6 +1,6 @@
 node_modules
 .idea
 
-.env
+client/.env
 
 .DS_Store
